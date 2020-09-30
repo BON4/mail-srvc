@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+service MailService {
+    rpc VirifyAccount(CreatedUser) returns (CreatedUserResponse) {
+        option (google.api.http) = {
+            post: "/v1alpha1/verify"
+            body: "CreatedUser"
+        };
+    }
+}
+
+message CreatedUser {
+    string id = 1;
+    string email = 2;
+}
+
+message CreatedUserResponse {
+    string verifyID = 1;
+}
