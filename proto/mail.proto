@@ -5,10 +5,17 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 service MailService {
-    rpc VirifyAccount(CreatedUser) returns (CreatedUserResponse) {
+    rpc SendEmail(CreatedUser) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             post: "/v1alpha1/verify"
             body: "CreatedUser"
+        };
+    }
+
+    rpc VerifyEmail(ConfirmUserRequest) returns (ConfirmUserResponse) {
+        option (google.api.http) = {
+            post: "/v1alpha1/confirm"
+            body: "CreatedUserResponse"
         };
     }
 }
@@ -18,6 +25,11 @@ message CreatedUser {
     string email = 2;
 }
 
-message CreatedUserResponse {
-    string verifyID = 1;
+message ConfirmUserRequest {
+    string id = 1;
+    string token = 2;
+}
+
+message ConfirmUserResponse {
+    bool confirmed = 1;
 }

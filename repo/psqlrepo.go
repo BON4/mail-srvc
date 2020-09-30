@@ -16,6 +16,14 @@ func NewPsqlREpository(database *sql.DB) Repository {
 	return &PsqlRepository{DB: database}
 }
 
-func (r *PsqlRepository) VirifyAccount(ctx context.Context, req *pb.CreatedUser) (*pb.CreatedUserResponse, error) {
-	return nil, nil
+// func (r *PsqlRepository) VirifyAccount(ctx context.Context, req *pb.CreatedUser, token string) (*pb.CreatedUserResponse, error) {
+// 	return nil, nil
+// }
+
+func (r *PsqlRepository) SaveEmailVerification(ctx context.Context, req *pb.CreatedUser, token string) error {
+	return nil
+}
+
+func (r *PsqlRepository) VerifyIfExist(ctx context.Context, req *pb.ConfirmUserRequest) bool {
+	return false
 }

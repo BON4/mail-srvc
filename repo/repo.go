@@ -7,5 +7,7 @@ import (
 )
 
 type Repository interface {
-	VirifyAccount(context.Context, *pb.CreatedUser) (*pb.CreatedUserResponse, error)
+	SaveEmailVerification(context.Context, *pb.CreatedUser, string) error
+	//VirifyAccount(context.Context, *pb.CreatedUser, string) (*pb.CreatedUserResponse, error)
+	VerifyIfExist(context.Context, *pb.ConfirmUserRequest) bool
 }

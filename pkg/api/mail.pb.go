@@ -9,7 +9,7 @@ package mail
 import (
 	context "context"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/empty"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -86,16 +86,17 @@ func (x *CreatedUser) GetEmail() string {
 	return ""
 }
 
-type CreatedUserResponse struct {
+type ConfirmUserRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	VerifyID string `protobuf:"bytes,1,opt,name=verifyID,proto3" json:"verifyID,omitempty"`
+	Id    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 }
 
-func (x *CreatedUserResponse) Reset() {
-	*x = CreatedUserResponse{}
+func (x *ConfirmUserRequest) Reset() {
+	*x = ConfirmUserRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_mail_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -103,13 +104,13 @@ func (x *CreatedUserResponse) Reset() {
 	}
 }
 
-func (x *CreatedUserResponse) String() string {
+func (x *ConfirmUserRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreatedUserResponse) ProtoMessage() {}
+func (*ConfirmUserRequest) ProtoMessage() {}
 
-func (x *CreatedUserResponse) ProtoReflect() protoreflect.Message {
+func (x *ConfirmUserRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_mail_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -121,16 +122,70 @@ func (x *CreatedUserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreatedUserResponse.ProtoReflect.Descriptor instead.
-func (*CreatedUserResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConfirmUserRequest.ProtoReflect.Descriptor instead.
+func (*ConfirmUserRequest) Descriptor() ([]byte, []int) {
 	return file_mail_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreatedUserResponse) GetVerifyID() string {
+func (x *ConfirmUserRequest) GetId() string {
 	if x != nil {
-		return x.VerifyID
+		return x.Id
 	}
 	return ""
+}
+
+func (x *ConfirmUserRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type ConfirmUserResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Confirmed bool `protobuf:"varint,1,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
+}
+
+func (x *ConfirmUserResponse) Reset() {
+	*x = ConfirmUserResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_mail_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConfirmUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmUserResponse) ProtoMessage() {}
+
+func (x *ConfirmUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mail_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmUserResponse.ProtoReflect.Descriptor instead.
+func (*ConfirmUserResponse) Descriptor() ([]byte, []int) {
+	return file_mail_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ConfirmUserResponse) GetConfirmed() bool {
+	if x != nil {
+		return x.Confirmed
+	}
+	return false
 }
 
 var File_mail_proto protoreflect.FileDescriptor
@@ -143,18 +198,28 @@ var file_mail_proto_rawDesc = []byte{
 	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x33, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x22, 0x31, 0x0a, 0x13,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x69, 0x66, 0x79, 0x49, 0x44, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x76, 0x65, 0x72, 0x69, 0x66, 0x79, 0x49, 0x44, 0x32,
-	0x69, 0x0a, 0x0b, 0x4d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5a,
-	0x0a, 0x0d, 0x56, 0x69, 0x72, 0x69, 0x66, 0x79, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12,
-	0x0c, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x1a, 0x14, 0x2e,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x22, 0x10, 0x2f, 0x76, 0x31,
-	0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x76, 0x65, 0x72, 0x69, 0x66, 0x79, 0x3a, 0x0b, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x22, 0x3a, 0x0a, 0x12,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
+	0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x33, 0x0a, 0x13, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x72, 0x6d, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x65, 0x64, 0x32, 0xd1, 0x01,
+	0x0a, 0x0b, 0x4d, 0x61, 0x69, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x58, 0x0a,
+	0x09, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x0c, 0x2e, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
+	0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x22, 0x10, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70,
+	0x68, 0x61, 0x31, 0x2f, 0x76, 0x65, 0x72, 0x69, 0x66, 0x79, 0x3a, 0x0b, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x68, 0x0a, 0x0b, 0x56, 0x65, 0x72, 0x69, 0x66,
+	0x79, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x13, 0x2e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d,
+	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x72, 0x6d, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x28, 0x22, 0x11, 0x2f, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x3a, 0x13, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -169,16 +234,20 @@ func file_mail_proto_rawDescGZIP() []byte {
 	return file_mail_proto_rawDescData
 }
 
-var file_mail_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_mail_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_mail_proto_goTypes = []interface{}{
 	(*CreatedUser)(nil),         // 0: CreatedUser
-	(*CreatedUserResponse)(nil), // 1: CreatedUserResponse
+	(*ConfirmUserRequest)(nil),  // 1: ConfirmUserRequest
+	(*ConfirmUserResponse)(nil), // 2: ConfirmUserResponse
+	(*empty.Empty)(nil),         // 3: google.protobuf.Empty
 }
 var file_mail_proto_depIdxs = []int32{
-	0, // 0: MailService.VirifyAccount:input_type -> CreatedUser
-	1, // 1: MailService.VirifyAccount:output_type -> CreatedUserResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: MailService.SendEmail:input_type -> CreatedUser
+	1, // 1: MailService.VerifyEmail:input_type -> ConfirmUserRequest
+	3, // 2: MailService.SendEmail:output_type -> google.protobuf.Empty
+	2, // 3: MailService.VerifyEmail:output_type -> ConfirmUserResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -203,7 +272,19 @@ func file_mail_proto_init() {
 			}
 		}
 		file_mail_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreatedUserResponse); i {
+			switch v := v.(*ConfirmUserRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_mail_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConfirmUserResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -221,7 +302,7 @@ func file_mail_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_mail_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -247,7 +328,8 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MailServiceClient interface {
-	VirifyAccount(ctx context.Context, in *CreatedUser, opts ...grpc.CallOption) (*CreatedUserResponse, error)
+	SendEmail(ctx context.Context, in *CreatedUser, opts ...grpc.CallOption) (*empty.Empty, error)
+	VerifyEmail(ctx context.Context, in *ConfirmUserRequest, opts ...grpc.CallOption) (*ConfirmUserResponse, error)
 }
 
 type mailServiceClient struct {
@@ -258,9 +340,18 @@ func NewMailServiceClient(cc grpc.ClientConnInterface) MailServiceClient {
 	return &mailServiceClient{cc}
 }
 
-func (c *mailServiceClient) VirifyAccount(ctx context.Context, in *CreatedUser, opts ...grpc.CallOption) (*CreatedUserResponse, error) {
-	out := new(CreatedUserResponse)
-	err := c.cc.Invoke(ctx, "/MailService/VirifyAccount", in, out, opts...)
+func (c *mailServiceClient) SendEmail(ctx context.Context, in *CreatedUser, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/MailService/SendEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mailServiceClient) VerifyEmail(ctx context.Context, in *ConfirmUserRequest, opts ...grpc.CallOption) (*ConfirmUserResponse, error) {
+	out := new(ConfirmUserResponse)
+	err := c.cc.Invoke(ctx, "/MailService/VerifyEmail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -269,35 +360,57 @@ func (c *mailServiceClient) VirifyAccount(ctx context.Context, in *CreatedUser, 
 
 // MailServiceServer is the server API for MailService service.
 type MailServiceServer interface {
-	VirifyAccount(context.Context, *CreatedUser) (*CreatedUserResponse, error)
+	SendEmail(context.Context, *CreatedUser) (*empty.Empty, error)
+	VerifyEmail(context.Context, *ConfirmUserRequest) (*ConfirmUserResponse, error)
 }
 
 // UnimplementedMailServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMailServiceServer struct {
 }
 
-func (*UnimplementedMailServiceServer) VirifyAccount(context.Context, *CreatedUser) (*CreatedUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VirifyAccount not implemented")
+func (*UnimplementedMailServiceServer) SendEmail(context.Context, *CreatedUser) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendEmail not implemented")
+}
+func (*UnimplementedMailServiceServer) VerifyEmail(context.Context, *ConfirmUserRequest) (*ConfirmUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
 }
 
 func RegisterMailServiceServer(s *grpc.Server, srv MailServiceServer) {
 	s.RegisterService(&_MailService_serviceDesc, srv)
 }
 
-func _MailService_VirifyAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MailService_SendEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreatedUser)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MailServiceServer).VirifyAccount(ctx, in)
+		return srv.(MailServiceServer).SendEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MailService/VirifyAccount",
+		FullMethod: "/MailService/SendEmail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MailServiceServer).VirifyAccount(ctx, req.(*CreatedUser))
+		return srv.(MailServiceServer).SendEmail(ctx, req.(*CreatedUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MailService_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MailServiceServer).VerifyEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MailService/VerifyEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MailServiceServer).VerifyEmail(ctx, req.(*ConfirmUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -307,8 +420,12 @@ var _MailService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MailServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "VirifyAccount",
-			Handler:    _MailService_VirifyAccount_Handler,
+			MethodName: "SendEmail",
+			Handler:    _MailService_SendEmail_Handler,
+		},
+		{
+			MethodName: "VerifyEmail",
+			Handler:    _MailService_VerifyEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
