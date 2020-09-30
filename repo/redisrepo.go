@@ -49,18 +49,14 @@ func (r *RedisRepository) SaveEmailVerification(ctx context.Context, req *pb.Cre
 	//hset mailusers:2
 	//expire mailusers:2 6000
 
-	//Check if id and token not in db
-	ifExist := r.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
-
-	if ifExist {
-		return errors.New("Email has been already sent")
-	}
-
 	mailKey := fmt.Sprintf("%s:%s", "mail", req.GetId())
-	mailVal := map[string]string{"id": req.GetId(), "t": token}
+	mailVal := map[string]interface{}{"id": req.GetId(), "t": token}
 	intCmd := r.conn.HSet(ctx, mailKey, mailVal)
 
 	if i, err := intCmd.Result(); err != nil || i == 0 {
+		if err != nil {
+			return err
+		}
 		return errors.New("Can not add email in redis db")
 	}
 
@@ -85,6 +81,10 @@ func (r *RedisRepository) VerifyIfExist(ctx context.Context, req *pb.ConfirmUser
 	i, err := sliceRedisResp.Result()
 
 	if err != nil || len(i) == 0 {
+		return false
+	}
+
+	if i[0] == nil || i[1] == nil {
 		return false
 	}
 

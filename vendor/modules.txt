@@ -24,6 +24,9 @@ github.com/golang/protobuf/ptypes/timestamp
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/satori/go.uuid v1.2.0
+## explicit
+github.com/satori/go.uuid
 # go.opentelemetry.io/otel v0.11.0
 go.opentelemetry.io/otel
 go.opentelemetry.io/otel/api/correlation

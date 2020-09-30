@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
+
+	uuid "github.com/satori/go.uuid"
 
 	pb "mail-srvc/pkg/api"
 	rp "mail-srvc/repo"
@@ -52,13 +53,12 @@ func NewMailServer(repo rp.Repository, dialer *mail.Dialer) pb.MailServiceServer
 }
 
 func (m *MailServer) SendEmail(ctx context.Context, req *pb.CreatedUser) (*empty.Empty, error) {
-	token := fmt.Sprintf("%d", rand.Int31())
-
+	token := fmt.Sprintf("%s", uuid.NewV4())
 	//Check if id and token not in db
 	ifExist := m.repo.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
 
 	if ifExist {
-		return nil, errors.New("Email has been already sent")
+		return nil, errors.New("Email already has sent")
 	}
 
 	err := m.repo.SaveEmailVerification(ctx, req, token)

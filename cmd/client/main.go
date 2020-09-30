@@ -1,24 +1,38 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"fmt"
 	"log"
 	pb "mail-srvc/pkg/api"
-	"time"
+	"os"
+	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
 
-func Verify(conn *grpc.ClientConn, id string, email string) {
+func Send(conn *grpc.ClientConn, id string, email string) {
 	client := pb.NewMailServiceClient(conn)
 	request := &pb.CreatedUser{Id: id, Email: email}
-	response, err := client.VirifyAccount(context.Background(), request)
+	response, err := client.SendEmail(context.Background(), request)
 
 	if err != nil {
 		grpclog.Fatalf("fail to dial: %v", err)
 	}
 	log.Println(response)
+}
+
+func Verify(conn *grpc.ClientConn, id string, token string) {
+	client := pb.NewMailServiceClient(conn)
+	request := &pb.ConfirmUserRequest{Id: id, Token: strings.TrimSuffix(token, "\n")}
+	response, err := client.VerifyEmail(context.Background(), request)
+
+	if err != nil {
+		grpclog.Fatalf("fail to dial: %v", err)
+	}
+	log.Println(response.Confirmed)
 }
 
 func main() {
@@ -31,28 +45,14 @@ func main() {
 	}
 	defer conn.Close()
 
-	start := time.Now()
-
-	for i := 0; i < 5; i++ {
-		Verify(conn, "1", "vlad.homam@gmail.com")
+	for i := 0; i < 1; i++ {
+		Send(conn, "1", "vlad.homam@gmail.com")
 	}
 
-	log.Println(time.Since(start))
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter token: ")
+	token, _ := reader.ReadString('\n')
 
-	// c := make(chan string)
+	Verify(conn, "1", token)
 
-	// closeChan := make(chan os.Signal)
-	// signal.Notify(closeChan, os.Interrupt, syscall.SIGTERM)
-
-	// go testFunc(c, closeChan)
-
-	// for i := 0; i < 10000000; i++ {
-	// 	time.Sleep(time.Millisecond * 2)
-	// 	select {
-	// 	case <-closeChan:
-	// 		return
-	// 	default:
-	// 		c <- fmt.Sprintf("Hello %d", i)
-	// 	}
-	// }
 }

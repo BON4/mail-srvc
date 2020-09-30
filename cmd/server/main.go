@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
-	"database/sql"
 	"log"
 	"mail-srvc/pkg/logic"
 	"net"
+	"os"
+	"time"
+
+	"github.com/go-redis/redis/v8"
 
 	rp "mail-srvc/repo"
 
@@ -27,16 +31,23 @@ func main() {
 		//panic(err)
 	}
 
-	db, err := sql.Open("postgres", "host=psqlhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+	rdb := redis.NewClient(&redis.Options{
+		//Change to os.Getenv
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 
-	if err != nil {
-		log.Fatal(err)
-		//panic(err)
+	status := rdb.Ping(context.Background())
+	if status.Err() != nil {
+		log.Fatal(status.Err())
 	}
 
-	repo := rp.NewPsqlREpository(db)
+	defer rdb.Close()
 
-	dailer := mail.NewDialer("smtp.gmail.com", 587, "email", "password")
+	redisRepo := rp.NewRedisRepository(rdb, time.Second*60)
+
+	dailer := mail.NewDialer("smtp.gmail.com", 587, os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.
@@ -45,7 +56,7 @@ func main() {
 	serverOptions := []grpc.ServerOption{}
 	s := grpc.NewServer(serverOptions...)
 
-	pb.RegisterMailServiceServer(s, logic.NewMailServer(repo, dailer))
+	pb.RegisterMailServiceServer(s, logic.NewMailServer(redisRepo, dailer))
 
 	log.Println("Serving gRPC on https://", addr)
 	log.Fatal(s.Serve(lis))
