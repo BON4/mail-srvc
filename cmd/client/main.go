@@ -8,15 +8,27 @@ import (
 	pb "mail-srvc/pkg/api"
 	"os"
 	"strings"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
 
-func Send(conn *grpc.ClientConn, id string, email string) {
+func SendOnce(conn *grpc.ClientConn, id string, email string) {
 	client := pb.NewMailServiceClient(conn)
 	request := &pb.CreatedUser{Id: id, Email: email}
-	response, err := client.SendEmail(context.Background(), request)
+	response, err := client.SendEmailOnce(context.Background(), request)
+
+	if err != nil {
+		grpclog.Fatalf("fail to dial: %v", err)
+	}
+	log.Println(response)
+}
+
+func Resend(conn *grpc.ClientConn, id string, email string) {
+	client := pb.NewMailServiceClient(conn)
+	request := &pb.CreatedUser{Id: id, Email: email}
+	response, err := client.ResendEmail(context.Background(), request)
 
 	if err != nil {
 		grpclog.Fatalf("fail to dial: %v", err)
@@ -46,8 +58,12 @@ func main() {
 	defer conn.Close()
 
 	for i := 0; i < 1; i++ {
-		Send(conn, "1", "vlad.homam@gmail.com")
+		SendOnce(conn, "1", "vlad.homam@gmail.com")
 	}
+
+	time.Sleep(time.Second * 10)
+
+	Resend(conn, "1", "vlad.homam@gmail.com")
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter token: ")

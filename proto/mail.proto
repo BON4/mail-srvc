@@ -5,9 +5,16 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 service MailService {
-    rpc SendEmail(CreatedUser) returns (google.protobuf.Empty) {
+    rpc SendEmailOnce(CreatedUser) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/v1alpha1/verify"
+            post: "/v1alpha1/send"
+            body: "CreatedUser"
+        };
+    }
+
+    rpc ResendEmail(CreatedUser) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1alpha1/resend"
             body: "CreatedUser"
         };
     }
@@ -17,7 +24,7 @@ service MailService {
             post: "/v1alpha1/confirm"
             body: "CreatedUserResponse"
         };
-    }
+    }  
 }
 
 message CreatedUser {

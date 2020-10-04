@@ -10,18 +10,15 @@ type MailTask struct {
 	content string
 }
 
-func (mt *MailTask) Send(mailDialer *mail.Dialer) error {
+func (mt *MailTask) Send(mailDialer *mail.Dialer) {
+	//TODO Implement error hadleling
 	message := mail.NewMessage()
 	//Should be on env viriables
-	message.SetHeader("From", "from@gmail.com")
+	message.SetHeader("From", mt.from)
 
 	message.SetHeader("To", mt.to)
 	message.SetBody("text/plain", mt.content)
 
 	//Sending Email
-	if err := mailDialer.DialAndSend(message); err != nil {
-		return err
-	}
-
-	return nil
+	mailDialer.DialAndSend(message)
 }

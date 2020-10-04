@@ -47,6 +47,8 @@ func main() {
 
 	redisRepo := rp.NewRedisRepository(rdb, time.Second*60)
 
+	log.Println(os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
+
 	dailer := mail.NewDialer("smtp.gmail.com", 587, os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
 
 	// This is only needed when SSL/TLS certificate is not valid on server.

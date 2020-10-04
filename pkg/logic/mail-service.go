@@ -52,8 +52,9 @@ func NewMailServer(repo rp.Repository, dialer *mail.Dialer) pb.MailServiceServer
 	return &mailServer
 }
 
-func (m *MailServer) SendEmail(ctx context.Context, req *pb.CreatedUser) (*empty.Empty, error) {
+func (m *MailServer) SendEmailOnce(ctx context.Context, req *pb.CreatedUser) (*empty.Empty, error) {
 	token := fmt.Sprintf("%s", uuid.NewV4())
+
 	//Check if id and token not in db
 	ifExist := m.repo.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
 
@@ -61,15 +62,41 @@ func (m *MailServer) SendEmail(ctx context.Context, req *pb.CreatedUser) (*empty
 		return nil, errors.New("Email already has sent")
 	}
 
+	if err := m.SendEmail(ctx, req, token); err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
+
+func (m *MailServer) ResendEmail(ctx context.Context, req *pb.CreatedUser) (*empty.Empty, error) {
+	token := fmt.Sprintf("%s", uuid.NewV4())
+
+	//Check if id and token not in db
+	//TODO resend email checking token too, but this method creates new token
+	ifExist := m.repo.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
+
+	if !ifExist {
+		return nil, errors.New("Email never has sent")
+	}
+
+	if err := m.SendEmail(ctx, req, token); err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
+
+func (m *MailServer) SendEmail(ctx context.Context, req *pb.CreatedUser, token string) error {
 	err := m.repo.SaveEmailVerification(ctx, req, token)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	m.queue <- MailTask{from: "Vlad", to: req.GetEmail(), content: fmt.Sprintf("Hello User, this is your uuid: %s", token)}
 
-	return &empty.Empty{}, nil
+	return nil
 }
 
 func (m *MailServer) VerifyEmail(ctx context.Context, req *pb.ConfirmUserRequest) (*pb.ConfirmUserResponse, error) {

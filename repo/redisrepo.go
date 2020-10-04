@@ -23,28 +23,6 @@ func NewRedisRepository(cache *redis.Client, dur time.Duration) Repository {
 	return &RedisRepository{conn: cache, emailConfirmationDuration: dur}
 }
 
-// func (r *RedisRepository) VirifyAccount(ctx context.Context, req *pb.CreatedUser, token string) error {
-// 	//hmget mailusers:1
-// 	mailKey := fmt.Sprintf("%s:%s", "mail", req.GetId())
-// 	sliceRedisResp := r.conn.HMGet(ctx, mailKey, "id", "t")
-
-// 	if sliceRedisResp.Err() != nil {
-// 		return nil, sliceRedisResp.Err()
-// 	}
-
-// 	i, err := sliceRedisResp.Result()
-
-// 	if err != nil || len(i) == 0 {
-// 		return nil, errors.New("Expiered")
-// 	}
-
-// 	if i[0].(string) != req.GetId() || i[1].(string) != token {
-// 		return nil, errors.New("Not found specifed email with token")
-// 	}
-
-// 	return &pb.CreatedUserResponse{VerifyID: i[1].(string)}, nil
-// }
-
 func (r *RedisRepository) SaveEmailVerification(ctx context.Context, req *pb.CreatedUser, token string) error {
 	//hset mailusers:2
 	//expire mailusers:2 6000
@@ -57,7 +35,7 @@ func (r *RedisRepository) SaveEmailVerification(ctx context.Context, req *pb.Cre
 		if err != nil {
 			return err
 		}
-		return errors.New("Can not add email in redis db")
+		return errors.New("Can not add email in redis db, email must already has sent")
 	}
 
 	boolCmd := r.conn.Expire(ctx, mailKey, r.emailConfirmationDuration)
