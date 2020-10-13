@@ -61,9 +61,11 @@ func main() {
 		SendOnce(conn, "1", "vlad.homam@gmail.com")
 	}
 
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 5)
 
-	Resend(conn, "1", "vlad.homam@gmail.com")
+	for i := 0; i < 4; i++ {
+		Resend(conn, "1", "vlad.homam@gmail.com")
+	}
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter token: ")

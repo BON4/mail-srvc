@@ -21,6 +21,9 @@ import (
 	mail "gopkg.in/mail.v2"
 )
 
+//CONSTANTS SHULD BE IN OS ENV
+const EMAIL_CONFIRMATION_DURATION = 10
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -40,12 +43,12 @@ func main() {
 
 	status := rdb.Ping(context.Background())
 	if status.Err() != nil {
-		log.Fatal(status.Err())
+		log.Fatal(status.Err(), "Fail to dial to redis")
 	}
 
 	defer rdb.Close()
 
-	redisRepo := rp.NewRedisRepository(rdb, time.Second*60)
+	redisRepo := rp.NewRedisRepository(rdb, time.Duration(EMAIL_CONFIRMATION_DURATION*time.Second))
 
 	log.Println(os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
 

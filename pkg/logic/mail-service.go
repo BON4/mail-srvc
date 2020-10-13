@@ -18,6 +18,9 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
+//CONSTANTS SHULD BE IN OS ENV
+const NUMBER_OF_MAILS_SEND_AT_THE_SAME_TIME = 4
+
 type MailServer struct {
 	repo       rp.Repository
 	mailDialer mail.Dialer
@@ -26,11 +29,16 @@ type MailServer struct {
 }
 
 func (m *MailServer) taskHandler() {
+	sem := make(chan bool, NUMBER_OF_MAILS_SEND_AT_THE_SAME_TIME)
 	for {
 		select {
 		case task := <-m.queue:
-			//TODO handle gorutines errors
-			go task.Send(&m.mailDialer)
+			sem <- true
+			go func() {
+				task.Send(&m.mailDialer)
+				fmt.Println("SENDED")
+				<-sem
+			}()
 		case <-m.closeChan:
 			fmt.Println("\r MailTaskHendler stoped")
 			signal.Stop(m.closeChan)
@@ -74,11 +82,11 @@ func (m *MailServer) ResendEmail(ctx context.Context, req *pb.CreatedUser) (*emp
 
 	//Check if id and token not in db
 	//TODO resend email checking token too, but this method creates new token
-	ifExist := m.repo.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
+	// ifExist := m.repo.VerifyIfExist(ctx, &pb.ConfirmUserRequest{Id: req.GetId(), Token: token})
 
-	if !ifExist {
-		return nil, errors.New("Email never has sent")
-	}
+	// if !ifExist {
+	// 	return nil, errors.New("Email never has sent")
+	// }
 
 	if err := m.SendEmail(ctx, req, token); err != nil {
 		return nil, err
@@ -94,7 +102,7 @@ func (m *MailServer) SendEmail(ctx context.Context, req *pb.CreatedUser, token s
 		return err
 	}
 
-	m.queue <- MailTask{from: "Vlad", to: req.GetEmail(), content: fmt.Sprintf("Hello User, this is your uuid: %s", token)}
+	m.queue <- MailTask{from: "vlad.homam@gmail.com", to: req.GetEmail(), content: fmt.Sprintf("Hello User, this is your uuid: %s", token)}
 
 	return nil
 }

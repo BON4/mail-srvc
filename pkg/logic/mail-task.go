@@ -1,6 +1,8 @@
 package logic
 
 import (
+	"log"
+
 	mail "gopkg.in/mail.v2"
 )
 
@@ -20,5 +22,9 @@ func (mt *MailTask) Send(mailDialer *mail.Dialer) {
 	message.SetBody("text/plain", mt.content)
 
 	//Sending Email
-	mailDialer.DialAndSend(message)
+	err := mailDialer.DialAndSend(message)
+
+	if err != nil {
+		log.Println(err)
+	}
 }
