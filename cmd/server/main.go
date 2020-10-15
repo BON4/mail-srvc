@@ -31,7 +31,6 @@ func main() {
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
-		//panic(err)
 	}
 
 	rdb := redis.NewClient(&redis.Options{
@@ -50,7 +49,9 @@ func main() {
 
 	redisRepo := rp.NewRedisRepository(rdb, time.Duration(EMAIL_CONFIRMATION_DURATION*time.Second))
 
-	log.Println(os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
+	if len(os.Getenv("MAIL_EMAIL")) == 0 || len(os.Getenv("MAIL_PASSWORD")) == 0 {
+		log.Fatal("Email or password is not valid")
+	}
 
 	dailer := mail.NewDialer("smtp.gmail.com", 587, os.Getenv("MAIL_EMAIL"), os.Getenv("MAIL_PASSWORD"))
 
