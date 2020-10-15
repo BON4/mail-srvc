@@ -36,7 +36,7 @@ func (m *MailServer) taskHandler() {
 			sem <- true
 			go func() {
 				task.Send(&m.mailDialer)
-				fmt.Println("SENDED")
+				fmt.Printf("Mail sended to: %s\n", task.to)
 				<-sem
 			}()
 		case <-m.closeChan:
