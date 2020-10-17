@@ -70,8 +70,6 @@ func (r *RedisRepository) VerifyIfExist(ctx context.Context, req *pb.ConfirmUser
 	// 	return false
 	// }
 
-	fmt.Println(i[0].(string) == req.GetId())
-
 	if i[0].(string) == req.GetId() && i[1].(string) != req.GetToken() {
 		return true
 	}
