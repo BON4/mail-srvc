@@ -27,7 +27,7 @@ const EMAIL_CONFIRMATION_DURATION = 10
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	addr := "0.0.0.0:8080"
+	addr := "0.0.0.0:8081"
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
@@ -35,7 +35,7 @@ func main() {
 
 	rdb := redis.NewClient(&redis.Options{
 		//Change to os.Getenv
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_URL"),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

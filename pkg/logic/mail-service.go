@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	uuid "github.com/satori/go.uuid"
@@ -30,17 +32,20 @@ type MailServer struct {
 
 func (m *MailServer) taskHandler() {
 	sem := make(chan bool, NUMBER_OF_MAILS_SEND_AT_THE_SAME_TIME)
+	var wg sync.WaitGroup
 	for {
 		select {
 		case task := <-m.queue:
 			sem <- true
+			wg.Add(1)
 			go func() {
+				defer wg.Done()
 				task.Send(&m.mailDialer)
-				fmt.Printf("Mail sended to: %s\n", task.to)
 				<-sem
 			}()
 		case <-m.closeChan:
-			fmt.Println("\r MailTaskHendler stoped")
+			log.Println("\r MailTaskHendler stoped")
+			wg.Wait()
 			signal.Stop(m.closeChan)
 			syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 			close(m.queue)
